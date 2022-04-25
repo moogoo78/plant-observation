@@ -37,7 +37,7 @@ export default function ObservationList({records}) {
                 </Avatar>
               </ListItemIcon>
               <ListItemText
-                primary={x.tree.name}
+                primary={`${x.tree.treeID}-${x.tree.name}`}
                 secondary={secondaryText}
               />
             </ListItem>

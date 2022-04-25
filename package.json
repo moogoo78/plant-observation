@@ -6,7 +6,8 @@
   "scripts": {
     "start": "webpack-dev-server --mode=development --open --hot",
     "build": "webpack --mode=production",
-    "analyze": "source-map-explorer 'build/*.js'"
+    "analyze": "source-map-explorer 'build/*.js'",
+    "deploy": "firebase deploy"
   },
   "dependencies": {
     "@babel/core": "^7.17.9",

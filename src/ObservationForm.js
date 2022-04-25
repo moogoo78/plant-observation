@@ -100,7 +100,7 @@ export default function ObservationForm() {
           <Autocomplete
             id="tree"
             options={plants}
-            getOptionLabel={(option) => option.name || ''}
+            getOptionLabel={(option) => `${option.treeID}-${option.name}` || ''}
             isOptionEqualToValue={(option, value) => {
               return option.treeID === value.treeID || value === [] || value === undefined;
             }}
