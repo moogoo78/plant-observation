@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "sow-plant",
     "public": "build",
     "ignore": [
       "firebase.json",
