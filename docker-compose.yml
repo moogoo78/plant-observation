@@ -1,0 +1,44 @@
+version: '3.7'
+
+services:
+  django:
+    build: .
+    container_name: po-django-dev-container
+    image: po-django-dev-image
+    ports:
+      - 8000:8000
+    depends_on:
+      - postgres
+    volumes:
+      - .:/code
+      - ../observ-volumes/static:/ct22-volumes/static
+      - ../observ-volumes/media:/ct22-volumes/media
+      #- ../ct22-volumes/bucket:/bucket
+    command: /srv/start
+    restart: always
+    #env_file:
+    #  - .env
+    environment:
+      - WEB_ENV=dev
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=example
+      - POSTGRES_DB=observ
+  postgres:
+    image: postgres:14-alpine
+    container_name: po-postgres-container
+    restart: always
+    volumes:
+      - ../observ-volumes/pgdata:/var/lib/postgresql/data/pgdata
+      #- ../po-volumes/bucket:/bucket
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=example
+      - POSTGRES_DB=observ
+      - PGDATA=/var/lib/postgresql/data/pgdata
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
