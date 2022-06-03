@@ -40,10 +40,11 @@ s      </Link>{' '}
 
 const steps = ['新增事件', '調查記錄', '確認'];
 
-function getStepContent(step) {
-  switch (step) {
+function getStepContent(state) {
+  // console.log(state);
+  switch (state.step) {
     case 0:
-      return <EventForm />;
+    return <EventForm options={state.options} />;
     case 1:
     return <ObservationForm />;
     case 2:
@@ -65,16 +66,47 @@ const AppWrapper = () => {
     </ThemeProvider>
   )
 }
+const initialState = {
+  step: 0,
+  options: null,
+  isLoading: true,
+};
+
+function reducer(state, action) {
+  switch (action.type) {
+  case 'setStep':
+    return {
+      ...state,
+      step: action.value
+    };
+  case 'setOptions':
+    console.log(action.value);
+    return {
+      ...state,
+      options: action.value,
+      isLoading: false,
+    }
+  default:
+    throw new Error();
+  }
+}
+
 const AppContent = () => {
-  const [activeStep, setActiveStep] = React.useState(0);
-
-  const handleNext = () => {
-    setActiveStep(activeStep + 1);
-  };
-
-  const handleBack = () => {
-    setActiveStep(activeStep - 1);
-  };
+  const [state, dispatch] = React.useReducer(reducer, initialState);
+  React.useEffect(() => {
+    const host = 'http://127.0.0.1:8000';
+    let url = `${host}/api/v1/event-options`;
+    console.log(url);
+    fetch(url)
+      .then(resp => resp.json())
+      .then(data => {
+        // console.log(data);
+        dispatch({type: 'setOptions', value: data});
+      })
+      .catch(error => {
+        console.error(error.message);
+      });
+  }, []);
 
   return (
     <>
@@ -93,12 +125,13 @@ const AppContent = () => {
           </Typography>
         </Toolbar>
       </AppBar>
+    {state.isLoading === true ? <>loading</> : 
       <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
         <Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
           <Typography component="h1" variant="h4" align="center">
             Plant Observation
           </Typography>
-          <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5 }}>
+          <Stepper activeStep={state.step} sx={{ pt: 3, pb: 5 }}>
             {steps.map((label) => (
               <Step key={label}>
                 <StepLabel>{label}</StepLabel>
@@ -106,7 +139,7 @@ const AppContent = () => {
             ))}
           </Stepper>
           <React.Fragment>
-            {activeStep === steps.length ? (
+            {state.step === steps.length ? (
               <React.Fragment>
                 <Typography variant="h5" gutterBottom>
                   Thank you for your order.
@@ -119,20 +152,20 @@ const AppContent = () => {
               </React.Fragment>
             ) : (
               <React.Fragment>
-                {getStepContent(activeStep)}
+                {getStepContent(state)}
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  {activeStep !== 0 && (
-                    <Button onClick={handleBack} sx={{ mt: 3, ml: 1 }}>
+                  {state.step !== 0 && (
+                    <Button onClick={() => dispatch({type:'setStep', value: state.step-1})} sx={{ mt: 3, ml: 1 }}>
                       回上一步
                     </Button>
                   )}
 
                   <Button
                     variant="contained"
-                    onClick={handleNext}
+                    onClick={() => dispatch({type:'setStep', value: state.step+1})}
                     sx={{ mt: 3, ml: 1 }}
                   >
-                    {activeStep === steps.length - 1 ? '送出' : '下一步'}
+                    {state.step === steps.length - 1 ? '送出' : '下一步'}
                   </Button>
                 </Box>
               </React.Fragment>
@@ -140,7 +173,8 @@ const AppContent = () => {
           </React.Fragment>
         </Paper>
         <Copyright />
-      </Container>
+     </Container>
+     }
     </>
   );
 }

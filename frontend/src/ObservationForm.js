@@ -22,7 +22,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { styled } from '@mui/material/styles';
-import { collection, getDocs } from "firebase/firestore";
+// import { collection, getDocs } from "firebase/firestore";
 import db from  './firebase';
 import { ObservationChoices } from 'ObservationChoices.js';
 import ObservationList from 'ObservationList.js';
@@ -43,21 +43,6 @@ export default function ObservationForm() {
   const [records, setRecords] = React.useState([]);
   const [plants,setPlants] = React.useState([]);
   const [data, setData] = React.useState(initData());
-  //const error = [gilad, jason, antoine].filter((v) => v).length !== 2;
-  React.useEffect(()=>{
-    getTrees();
-  }, []);
-
-  async function getTrees () {
-    const querySnapshot = await getDocs(collection(db, "tree"));
-    const rows = [];
-    querySnapshot.forEach((doc) => {
-      rows.push(doc.data());
-      //console.log(`${doc.id} => ${doc.data()}`);
-    });
-    console.log(rows);
-    setPlants(rows);
-  }
 
   const handleChange = (_, key, value, checked=null) => {
     console.log('change', key, value, value, checked);
@@ -98,12 +83,10 @@ export default function ObservationForm() {
       <Grid container spacing={3}>
         <Grid item xs={12} sm={12}>
           <Autocomplete
-            id="tree"
+            id="observ-plant"
             options={plants}
-            getOptionLabel={(option) => `${option.treeID}-${option.name}` || ''}
-            isOptionEqualToValue={(option, value) => {
-              return option.treeID === value.treeID || value === [] || value === undefined;
-            }}
+            getOptionLabel={(option) => option}
+            isOptionEqualToValue={(option, value) => option.id}
             value={data.tree || null}
             renderInput={(params) => <TextField {...params} label="植物" variant="standard" fullWidth required/>}
             onChange={(e, value)=> handleChange(e, 'tree', value)}
