@@ -11,17 +11,6 @@ class Person(models.Model):
         verbose_name_plural = '人員 '
 
 
-class Event(models.Model):
-    name = models.CharField(max_length=1000)
-    datetime_start = models.DateField('調查日期', null=True, blank=True)
-    datetime_end = models.DateField('調查日期-結束', null=True, blank=True)
-    members = models.ManyToManyField(Person, verbose_name="list of sites")
-
-    class Meta:
-        verbose_name = '調查活動'
-        verbose_name_plural = '調查活動'
-
-
 class Project(models.Model):
     name = models.CharField(max_length=1000)
 
@@ -44,10 +33,24 @@ class Location(models.Model):
         verbose_name_plural = '地點'
 
 
+class Event(models.Model):
+    name = models.CharField(max_length=1000)
+    datetime_start = models.DateField('調查日期', null=True, blank=True)
+    datetime_end = models.DateField('調查日期-結束', null=True, blank=True)
+    members = models.ManyToManyField(Person, verbose_name="list of sites", related_name='event_members')
+    principle = models.ForeignKey(Person, on_delete=models.SET_NULL, null=True, blank=True, related_name='event_principle')
+    location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
+    project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, blank=True)
+
+    class Meta:
+        verbose_name = '調查活動'
+        verbose_name_plural = '調查活動'
+
+
 class Plant(models.Model):
     name = models.CharField(max_length=1000)
-    label = models.CharField(max_length=1000)
-    species = models.ForeignKey('Species', on_delete=models.SET_NULL, null=True)
+    label = models.CharField(max_length=1000, null=True)
+    species = models.ForeignKey('Species', on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -60,6 +63,7 @@ class MeasurementOrFactParameterCategory(models.Model):
     name = models.CharField(max_length=1000)
     label = models.CharField(max_length=1000, null=True)
     seq = models.PositiveSmallIntegerField(default=1)
+    description = models.CharField(max_length=1000, null=True, blank=True)
 
     def __str__(self):
         return f'{self.label} ({self.name})'
@@ -86,7 +90,9 @@ class MeasurementOrFactParameter(models.Model):
 
 
 class MeasurementOrFact(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.SET_NULL, null=True, blank=True)
     remarks = models.TextField(null=True)
+    plant = models.ForeignKey(Plant, on_delete=models.SET_NULL, null=True, blank=True)
     parameters = models.ManyToManyField(MeasurementOrFactParameter, verbose_name='parameters')
 
     class Meta:

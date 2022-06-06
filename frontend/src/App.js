@@ -25,6 +25,8 @@ import { zhTW } from 'date-fns/locale';
 import EventForm from './EventForm';
 import ObservationForm from './ObservationForm';
 
+const OptionContext = React.createContext();
+
 function Copyright() {
   return (
     <Typography variant="body2" color="text.secondary" align="center">
@@ -40,13 +42,13 @@ s      </Link>{' '}
 
 const steps = ['新增事件', '調查記錄', '確認'];
 
-function getStepContent(state) {
+function getStepContent(state, dispatch) {
   // console.log(state);
   switch (state.step) {
     case 0:
-    return <EventForm options={state.options} />;
+    return <EventForm dispatch={dispatch} data={state.data} />;
     case 1:
-    return <ObservationForm />;
+    return <ObservationForm dispatch={dispatch} data={state.data} />;
     case 2:
     return null;
     default:
@@ -70,6 +72,13 @@ const initialState = {
   step: 0,
   options: null,
   isLoading: true,
+  data: {
+    date: null,
+    project: null,
+    location: null,
+    principal: null,
+    observations: [],
+  },
 };
 
 function reducer(state, action) {
@@ -80,11 +89,19 @@ function reducer(state, action) {
       step: action.value
     };
   case 'setOptions':
-    console.log(action.value);
     return {
       ...state,
       options: action.value,
       isLoading: false,
+    }
+  case 'setData':
+    console.log(action, 'setdata');
+    return {
+      ...state,
+      data: {
+        ...state.data,
+        [action.name]: action.value,
+      }
     }
   default:
     throw new Error();
@@ -94,9 +111,9 @@ function reducer(state, action) {
 const AppContent = () => {
   const [state, dispatch] = React.useReducer(reducer, initialState);
   React.useEffect(() => {
-    const host = 'http://127.0.0.1:8000';
-    let url = `${host}/api/v1/event-options`;
-    console.log(url);
+    console.log();
+    let url = `${process.env.API_PREFIX}event-options`;
+    // console.log(url);
     fetch(url)
       .then(resp => resp.json())
       .then(data => {
@@ -108,6 +125,25 @@ const AppContent = () => {
       });
   }, []);
 
+  const postData = (data) => {
+    let url = `${process.env.API_PREFIX}observations`;
+    fetch(url, {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'content-type': 'application/json'
+      },
+       body: JSON.stringify(data),
+     }).then((resp) => {
+       if (!resp.ok) {
+         console.error(resp.status);
+       }
+       return resp.json()
+     }).catch((error) => {
+       console.error(error.message);
+     });
+  };
+  console.log(state);
   return (
     <>
       <AppBar
@@ -125,7 +161,7 @@ const AppContent = () => {
           </Typography>
         </Toolbar>
       </AppBar>
-    {state.isLoading === true ? <>loading</> : 
+    {state.isLoading === true ? <>loading</> :
       <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
         <Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
           <Typography component="h1" variant="h4" align="center">
@@ -142,33 +178,35 @@ const AppContent = () => {
             {state.step === steps.length ? (
               <React.Fragment>
                 <Typography variant="h5" gutterBottom>
-                  Thank you for your order.
+                  Thank you.
                 </Typography>
                 <Typography variant="subtitle1">
-                  Your order number is #2001539. We have emailed your order
-                  confirmation, and will send you an update when your order has
-                  shipped.
+                  aaaa
                 </Typography>
               </React.Fragment>
             ) : (
-              <React.Fragment>
-                {getStepContent(state)}
+                <OptionContext.Provider value={state.options}>
+                  {getStepContent(state, dispatch)}
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   {state.step !== 0 && (
                     <Button onClick={() => dispatch({type:'setStep', value: state.step-1})} sx={{ mt: 3, ml: 1 }}>
                       回上一步
                     </Button>
                   )}
-
                   <Button
                     variant="contained"
-                    onClick={() => dispatch({type:'setStep', value: state.step+1})}
+                    onClick={() => {
+                      dispatch({type:'setStep', value: state.step+1});
+                      if (state.step == steps.length - 1 ) {
+                        postData(state.data);
+                      }
+                    }}
                     sx={{ mt: 3, ml: 1 }}
                   >
                     {state.step === steps.length - 1 ? '送出' : '下一步'}
                   </Button>
                 </Box>
-              </React.Fragment>
+              </OptionContext.Provider>
             )}
           </React.Fragment>
         </Paper>
@@ -179,10 +217,11 @@ const AppContent = () => {
   );
 }
 
-export default function App() {
+const App = () => {
   return (
     <AppWrapper>
       <AppContent />
     </AppWrapper>
   )
 }
+export {App, OptionContext}

@@ -4,5 +4,6 @@ from . import (
 )
 
 urlpatterns = [
-    path('event-options', api_views.get_event_options, name='get-event-options'),
+    path('event-options', api_views.get_event_options, name='api-get-event-options'),
+    path('observations', api_views.observations, name='api-observations'),
 ]

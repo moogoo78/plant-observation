@@ -10,23 +10,22 @@ import {
 }  from '@mui/material';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 
-export default function EventForm({options}) {
-  const [value, setValue] = React.useState(new Date('2014-08-18T21:11:54'));
-  const handleChangeV = (newValue) => {
-    setValue(newValue);
-  };
+import { OptionContext } from './App';
 
+export default function EventForm({dispatch, data}) {
+  const options = React.useContext(OptionContext);
+  // console.log('props', options, data);
   return (
-    <React.Fragment>
+    <>
       <Typography variant="h6" gutterBottom>調查活動</Typography>
       <Grid container spacing={3}>
         <Grid item xs={12} sm={6}>
           <MobileDatePicker
             label="調查日期"
             inputFormat="yyyy-MM-dd"
-            value={value}
+            value={data.date}
             mask='____-__-__'
-            onChange={handleChangeV}
+            onChange={(v)=>dispatch({type:'setData', name: 'date', value: v})}
             renderInput={(params) => <TextField {...params} variant="standard" fullWidth required/>}
           />
         </Grid>
@@ -36,6 +35,8 @@ export default function EventForm({options}) {
             options={options.person}
             getOptionLabel={(option) => option.name}
             isOptionEqualToValue={(option) => option.id}
+            value={data.principal}
+            onChange={(e, v)=>dispatch({type:'setData', name: 'principal', value: v})}
             renderInput={(params) => <TextField {...params} label="主責人/單位" variant="standard" fullWidth required />}
           />
         </Grid>
@@ -43,8 +44,10 @@ export default function EventForm({options}) {
           <Autocomplete
             disablePortal
             options={options.project}
+            value={data.project}
             getOptionLabel={(option) => option.name}
             isOptionEqualToValue={(option) => option.id}
+            onChange={(e, v)=>dispatch({type:'setData', name: 'project', value: v})}
             renderInput={(params) => <TextField {...params} label="專案名稱" variant="standard" fullWidth />}
           />
         </Grid>
@@ -53,8 +56,10 @@ export default function EventForm({options}) {
             disablePortal
             id="combo-box-demo"
             options={options.location}
+            value={data.location}
             getOptionLabel={(option) => option.name}
             isOptionEqualToValue={(option) => option.id}
+            onChange={(e, v)=>dispatch({type:'setData', name: 'location', value: v})}
             renderInput={(params) => <TextField {...params} label="調查地點" variant="standard" fullWidth required />}
           />
         </Grid>
@@ -87,6 +92,6 @@ export default function EventForm({options}) {
         </Grid>
          */}
       </Grid>
-    </React.Fragment>
+    </>
   );
 }

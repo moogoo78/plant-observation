@@ -23,60 +23,38 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { styled } from '@mui/material/styles';
 // import { collection, getDocs } from "firebase/firestore";
-import db from  './firebase';
-import { ObservationChoices } from 'ObservationChoices.js';
+// import db from  './firebase';
+// import { ObservationChoices } from 'ObservationChoices.js';
+
 import ObservationList from 'ObservationList.js';
+import { OptionContext } from './App';
 
-const initData = () => {
-  let initData = {
-    tree: null,
-    remarks: '',
-  };
-  for (const i in ObservationChoices) {
-    const k = ObservationChoices[i].key;
-    initData[k] = [];
-  }
-  return initData;
-}
 
-export default function ObservationForm() {
-  const [records, setRecords] = React.useState([]);
-  const [plants,setPlants] = React.useState([]);
-  const [data, setData] = React.useState(initData());
+export default function ObservationForm({dispatch, data}) {
+  const initObserv = () => ({
+    plant: '',
+    checked: [],
+    remarks: ''
+  });
 
-  const handleChange = (_, key, value, checked=null) => {
-    console.log('change', key, value, value, checked);
-    setData((ps)=> {
-      let newValue = null;
-      if (ObservationChoices.find((x) => x.key === key)) {
-        newValue = ps[key];
-        if (checked === true) {
-          const idx = ps[key].indexOf(value);
-          if (idx >= 0) {
-            newValue.splice(idx ,1);
-          }
-        } else {
-          newValue.push(value);
-        }
-      } else {
-        newValue = value;
-      }
-      return({
-        ...ps,
-        [key]: newValue,
-      });
-    });
-  }
-
-  const handleAddRecord = (_) => {
-    let newRecords = records;
-    if (data.tree) {
-      newRecords.push(data);
-      //setRecords(newRecords);
-      setData(initData());
+  const options = React.useContext(OptionContext);
+  const [observ, setObserv] = React.useState(initObserv());
+  const handleAddObserv = () => {
+    let observations = data.observations;
+    if (observ.plant) {
+      observations.push(observ);
+      dispatch({type: 'setData', name: 'observations', value: observations});
+      setObserv(initObserv());
     }
   }
-  console.log('render', data);
+
+  const handleRemoveObserv = (event, index) => {
+    console.log(index);
+    let observations = data.observations;
+    observations.splice(index, 1);
+    dispatch({type: 'setData', name: 'observations', value: observations});
+  }
+  // console.log(data);
   return (
     <React.Fragment>
       <Typography variant="h6" gutterBottom>調查表格</Typography>
@@ -84,33 +62,44 @@ export default function ObservationForm() {
         <Grid item xs={12} sm={12}>
           <Autocomplete
             id="observ-plant"
-            options={plants}
-            getOptionLabel={(option) => option}
-            isOptionEqualToValue={(option, value) => option.id}
-            value={data.tree || null}
+            options={options.plant}
+            value={observ.plant}
+            getOptionLabel={(option) => (option.name) ? `${option.name}. ${option.label}` : ''}
+            isOptionEqualToValue={(option) => option.id}
             renderInput={(params) => <TextField {...params} label="植物" variant="standard" fullWidth required/>}
-            onChange={(e, value)=> handleChange(e, 'tree', value)}
+            onChange={(e, v) => setObserv( {...observ, plant: v })}
           />
         </Grid>
-        {(ObservationChoices.length) ? ObservationChoices.map((x) => (
-          <Grid item xs={12} sm={12} key={x.key}>
+        {(options.mof.length) ? options.mof.map((x) => (
+          <Grid item xs={12} sm={12} key={x.name}>
             <FormControl sx={{ m: 0 }} component="fieldset" variant="standard">
               <FormLabel component="legend">{x.title}</FormLabel>
               <FormGroup row>
                 {(x.choices.length) ? x.choices.map((option) => {
-                  const dataKey = `${x.key}_${option.name}`;
-                  const checked = (data && data[x.key].length > 0 && data[x.key].indexOf(option.name) >=0 ) ? true : false;
+                  const dataKey = `${x.name}__${option.name}`;
+                  const checked = (observ && observ.checked.length > 0 && observ.checked.indexOf(dataKey) >=0 ) ? true : false;
                   return (
                     <FormControlLabel
                       key={dataKey}
                       control={
-                        <Checkbox checked={checked} onChange={(e)=> handleChange(e, x.key, option.name, checked)} />
+                        <Checkbox checked={checked} onChange={(e) => {
+                          let values = [...observ.checked];
+                          if (checked === false) {
+                            values.push(dataKey);
+                          } else {
+                            const foundIndex = values.findIndex( (x)=> x === dataKey );
+                            if (foundIndex >= 0) {
+                              values.splice(foundIndex, 1);
+                            }
+                          }
+                          setObserv({ ...observ, checked: values });
+                        }} />
                       }
                       label={`${option.name}-${option.label}`}
                     />
                   )}) : null }
               </FormGroup>
-              <FormHelperText>{x.helperText}</FormHelperText>
+              <FormHelperText>{x.description}</FormHelperText>
             </FormControl>
           </Grid>
         )) : null}
@@ -122,21 +111,21 @@ export default function ObservationForm() {
             multiline
             fullWidth
             rows={3}
-            value={data.remarks}
-            onChange={(e, val) => (setData({...data, remarks: val}))}
+            value={observ.remarks}
+            onChange={(e, v) => (setObserv({...observ, remarks: v}))}
           />
         </Grid>
         <Grid item xs={12} sm={12}>
           <Button
             variant="contained"
             sx={{ mt: 3, ml: 1 }}
-            onClick={handleAddRecord}
+            onClick={handleAddObserv}
           >
             新增紀錄
           </Button>
         </Grid>
         <Grid item xs={12} md={12}>
-          <ObservationList records={records} />
+          <ObservationList observations={data.observations} onRemove={handleRemoveObserv}/>
         </Grid>
       </Grid>
     </React.Fragment>
