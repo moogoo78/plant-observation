@@ -11,12 +11,12 @@ services:
     build:
       context: .
       dockerfile: ./docker-scripts/Dockerfile.prod
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=gateway
-      - traefik.http.routers.observ.entrypoints=web
-      - traefik.http.routers.observ.rule=Host(`sow.sh21.ml`)
-      - traefik.http.services.observ.loadbalancer.server.port=8001
+    #labels:
+    #  - traefik.enable=true
+    #  - traefik.docker.network=gateway
+    #  - traefik.http.routers.observ.entrypoints=web
+    #  - traefik.http.routers.observ.rule=Host(`sow.sh21.ml`)
+    #  - traefik.http.services.observ.loadbalancer.server.port=8001
     #ports:
     #  - 80:8001
     expose:
@@ -27,4 +27,27 @@ services:
 
   postgres:
     networks:
+      - internal
+
+  nginx:
+    image: nginx:1.17.6-alpine
+    restart: unless-stopped
+    volumes:
+      - ./docker-scripts/nginx-observ.conf:/etc/nginx/conf.d/default.conf
+      - ../observ-volumes/static:/tree-volumes/static
+      #- ../tree-volumes/media:/tree-volumes/media
+    #ports:
+    #  - 80:80
+    #  - 443:443
+    expose:
+      - 80
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=gateway
+      - traefik.http.routers.tree.entrypoints=web
+      - traefik.http.routers.tree.rule=Host(`sow.sh21.ml`)
+      - traefik.http.services.tree.loadbalancer.server.port=80
+    networks:
+      - gateway
       - internal
