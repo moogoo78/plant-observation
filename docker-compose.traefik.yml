@@ -34,7 +34,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./docker-scripts/nginx-observ.conf:/etc/nginx/conf.d/observ.conf
-      - ../observ-volumes/static:/tree-volumes/static
+      - ../observ-volumes/static:/observ-volumes/static
       #- ../tree-volumes/media:/tree-volumes/media
     #ports:
     #  - 80:80

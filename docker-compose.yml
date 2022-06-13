@@ -13,8 +13,8 @@ services:
       - postgres
     volumes:
       - .:/code
-      - ../observ-volumes/static:/ct22-volumes/static
-      - ../observ-volumes/media:/ct22-volumes/media
+      - ../observ-volumes/static:/observ-volumes/static
+      - ../observ-volumes/media:/observ-volumes/media
       #- ../ct22-volumes/bucket:/bucket
     command: /srv/start
     restart: always
