@@ -15,7 +15,7 @@ services:
       - traefik.enable=true
       #- traefik.docker.network=observ_default
       - traefik.http.routers.observ.entrypoints=web
-      - traefik.http.routers.observ.rule=Host(`my-observ.mg`)
+      - traefik.http.routers.observ.rule=Host(`sow.sh21.ml`)
       - traefik.http.services.observ.loadbalancer.server.port=8001
     #ports:
     #  - 80:8001
