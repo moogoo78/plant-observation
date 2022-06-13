@@ -13,7 +13,7 @@ services:
       dockerfile: ./docker-scripts/Dockerfile.prod
     labels:
       - traefik.enable=true
-      #- traefik.docker.network=observ_default
+      - traefik.docker.network=gateway
       - traefik.http.routers.observ.entrypoints=web
       - traefik.http.routers.observ.rule=Host(`sow.sh21.ml`)
       - traefik.http.services.observ.loadbalancer.server.port=8001
@@ -22,8 +22,8 @@ services:
     expose:
       - 8001
     networks:
-      - internal
       - gateway
+      - internal
 
   postgres:
     networks:
