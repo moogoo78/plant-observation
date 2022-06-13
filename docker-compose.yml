@@ -2,11 +2,13 @@ version: '3.7'
 
 services:
   django:
-    build: .
-    container_name: po-django-dev-container
-    image: po-django-dev-image
-    ports:
-      - 8000:8000
+    build:
+      context: .
+      dockerfile: ./docker-scripts/Dockerfile
+      args:
+        PYTHON_VERSION: ${ARG_PYTHON_VERSION}
+    container_name: po-django-${WEB_ENV}-container
+    image: po-django-${WEB_ENV}-image
     depends_on:
       - postgres
     volumes:
@@ -16,15 +18,15 @@ services:
       #- ../ct22-volumes/bucket:/bucket
     command: /srv/start
     restart: always
-    #env_file:
-    #  - .env
+    #env_file: not working
+    #  - ./docker-scripts/.env.dev
     environment:
-      - WEB_ENV=dev
-      - POSTGRES_HOST=postgres
-      - POSTGRES_PORT=5432
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=example
-      - POSTGRES_DB=observ
+      - WEB_ENV=${WEB_ENV}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
   postgres:
     image: postgres:14-alpine
     container_name: po-postgres-container
@@ -33,12 +35,7 @@ services:
       - ../observ-volumes/pgdata:/var/lib/postgresql/data/pgdata
       #- ../po-volumes/bucket:/bucket
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=example
-      - POSTGRES_DB=observ
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
       - PGDATA=/var/lib/postgresql/data/pgdata
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8080:8080
