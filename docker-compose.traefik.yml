@@ -11,14 +11,6 @@ services:
     build:
       context: .
       dockerfile: ./docker-scripts/Dockerfile.prod
-    #labels:
-    #  - traefik.enable=true
-    #  - traefik.docker.network=gateway
-    #  - traefik.http.routers.observ.entrypoints=web
-    #  - traefik.http.routers.observ.rule=Host(`sow.sh21.ml`)
-    #  - traefik.http.services.observ.loadbalancer.server.port=8001
-    #ports:
-    #  - 80:8001
     expose:
       - 8001
     networks:
@@ -44,10 +36,10 @@ services:
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
     labels:
       - traefik.enable=true
-      - traefik.docker.network=gateway
-      - traefik.http.routers.observ.entrypoints=web
-      - traefik.http.routers.observ.rule=Host(`sow.sh21.ml`)
-      - traefik.http.services.observ.loadbalancer.server.port=80
+      #- traefik.docker.network=gateway
+      #- traefik.http.routers.observ.entrypoints=web
+      #- traefik.http.routers.observ.rule=Host(`sow.sh21.ml`)
+      #- traefik.http.services.observ.loadbalancer.server.port=80
     networks:
       - gateway
       - internal

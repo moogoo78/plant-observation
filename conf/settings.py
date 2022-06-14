@@ -134,8 +134,5 @@ STATIC_ROOT = env('STATIC_ROOT', default=default_static_dir)
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:9000',
-    'http://127.0.0.1:9000',
-    'https://sow.sh21.ml:9000',
-]
+CORS_ALLOWED_ORIGINS = env('CORS_ALLOWED_ORIGINS')
+CSRF_TRUSTED_ORIGIN = env('CSRF_TRUSTED_ORIGIN')
