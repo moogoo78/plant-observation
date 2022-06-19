@@ -4,7 +4,7 @@ services:
   django:
     build:
       context: .
-      dockerfile: ./docker-scripts/Dockerfile
+      dockerfile: ./docker/Dockerfile
       args:
         PYTHON_VERSION: ${ARG_PYTHON_VERSION}
     container_name: po-django-${WEB_ENV}-container
@@ -19,7 +19,7 @@ services:
     command: /srv/start
     restart: always
     #env_file: not working
-    #  - ./docker-scripts/.env.dev
+    #  - ./docker/.env.dev
     environment:
       - WEB_ENV=${WEB_ENV}
       - POSTGRES_HOST=${POSTGRES_HOST}

@@ -33,11 +33,11 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache --user -r requirements/base.txt
 
 
-COPY ./docker-scripts/entrypoint /srv/entrypoint
+COPY ./docker/entrypoint /srv/entrypoint
 RUN sed -i 's/\r$//g' /srv/entrypoint
 RUN chmod +x /srv/entrypoint
 
-COPY ./docker-scripts/start /srv/start
+COPY ./docker/start /srv/start
 RUN sed -i 's/\r$//g' /srv/start
 RUN chmod +x /srv/start
 

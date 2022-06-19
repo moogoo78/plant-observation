@@ -3,7 +3,7 @@ version: '3.7'
 services:
   django:
     build:
-      dockerfile: ./docker-scripts/Dockerfile.prod
+      dockerfile: ./docker/Dockerfile.prod
     expose:
       - 8001
   nginx:
@@ -13,7 +13,7 @@ services:
       - 80:80
       # 443:443
     volumes:
-      - ./docker-scripts/nginx-observ.conf:/etc/nginx/conf.d/nginx-observ.conf:ro
+      - ./docker/nginx-observ.conf:/etc/nginx/conf.d/nginx-observ.conf:ro
      #- ../tree-volumes/static:/tree-volumes/static
      #- ../tree-volumes/media:/tree-volumes/media
      #- ../tree-volumes/certbot/conf:/etc/letsencrypt
