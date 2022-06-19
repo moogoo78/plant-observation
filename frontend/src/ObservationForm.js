@@ -49,12 +49,12 @@ export default function ObservationForm({dispatch, data}) {
   }
 
   const handleRemoveObserv = (event, index) => {
-    console.log(index);
+    // console.log(index);
     let observations = data.observations;
     observations.splice(index, 1);
     dispatch({type: 'setData', name: 'observations', value: observations});
   }
-  // console.log(data);
+
   return (
     <React.Fragment>
       <Typography variant="h6" gutterBottom>調查表格</Typography>
@@ -76,8 +76,8 @@ export default function ObservationForm({dispatch, data}) {
               <FormLabel component="legend">{x.title}</FormLabel>
               <FormGroup row>
                 {(x.choices.length) ? x.choices.map((option) => {
-                  const dataKey = `${x.name}__${option.name}`;
-                  const checked = (observ && observ.checked.length > 0 && observ.checked.indexOf(dataKey) >=0 ) ? true : false;
+                  const dataKey = `${x.id}/${option.id}`;
+                  const checked = (observ && observ.checked.length > 0 && observ.checked.indexOf(dataKey) >= 0 ) ? true : false;
                   return (
                     <FormControlLabel
                       key={dataKey}

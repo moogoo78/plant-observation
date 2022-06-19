@@ -90,7 +90,7 @@ class MeasurementOrFactParameter(models.Model):
 
 
 class MeasurementOrFact(models.Model):
-    event = models.ForeignKey(Event, on_delete=models.SET_NULL, null=True, blank=True)
+    event = models.ForeignKey(Event, on_delete=models.SET_NULL, null=True, blank=True, related_name='measurement_or_facts')
     remarks = models.TextField(null=True)
     plant = models.ForeignKey(Plant, on_delete=models.SET_NULL, null=True, blank=True)
     parameters = models.ManyToManyField(MeasurementOrFactParameter, verbose_name='parameters')

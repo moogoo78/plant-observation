@@ -15,21 +15,45 @@ import { OptionContext } from './App';
 
 export default function ObservationList({observations, onRemove}) {
   const options = React.useContext(OptionContext);
+  let labelMap = {};
+  let catIdIndex = {};
+  for (const i in options.mof) {
+    catIdIndex[options.mof[i].id] = parseInt(i, 10);
+    for (const c of options.mof[i].choices) {
+      labelMap[`${options.mof[i].id}/${c.id}`] = c.label;
+    }
+  }
+  //console.log(labelMap, catIdIndex);
+
+  const getLabels = (checked) => {
+    let tmp = options.mof.map((x) => []);
+    let ret = [];
+
+    for (const key of checked) {
+      const keyList = key.split('/');
+      const index = catIdIndex[keyList[0]];
+      tmp[index].push(labelMap[key]);
+    }
+
+    for (const i in tmp) {
+      if (tmp[i].length > 0) {
+        ret.push(options.mof[i].label + ': ' + tmp[i].join('/'));
+      }
+    }
+    return ret.join(', ');
+  }
+
   return (
     <>
+    {observations.length > 0 ?
       <Typography sx={{ mt: 4, mb: 2 }} variant="h6" component="div">
-        已加入紀錄
+      紀錄列表
       </Typography>
+      : null
+    }
       <List dense={true}>
-        {observations.map((x, idx) => {
-          const textList = x.checked.map((x) => {
-            const keys = x.split('__');
-            const mofCatIndex = options.mof.findIndex((x) => x.name === keys[0]);
-            const mofIndex = options.mof[mofCatIndex].choices.findIndex((x) => x.name === keys[1]);
-            const v = options.mof[mofCatIndex].choices[mofIndex];
-            return `${options.mof[mofCatIndex].label}: ${v.name}. ${v.label}`;
-          });
-
+        {observations.map((observ, idx) => {
+          const catLabels = options.mof.map((x)=> {});
           return (
             <ListItem
               key={idx}
@@ -45,8 +69,8 @@ export default function ObservationList({observations, onRemove}) {
                 </Avatar>
               </ListItemIcon>
               <ListItemText
-                primary={`${x.plant.name}. ${x.plant.label}`}
-                secondary={textList.join(', ')}
+                primary={`${observ.plant.name}. ${observ.plant.label}`}
+                secondary={getLabels(observ.checked)}
               />
             </ListItem>
           )})}

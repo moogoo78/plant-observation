@@ -19,12 +19,14 @@ import {
 //   AdapterDateFns,
 //   LocalizationProvider
 // } from '@mui/x-date-pickers';
+
+
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { zhTW } from 'date-fns/locale';
 import EventForm from './EventForm';
 import ObservationForm from './ObservationForm';
-
+import EventSummary from './EventSummary';
 const OptionContext = React.createContext();
 
 function Copyright() {
@@ -50,7 +52,7 @@ function getStepContent(state, dispatch) {
     case 1:
     return <ObservationForm dispatch={dispatch} data={state.data} />;
     case 2:
-    return null;
+    return <EventSummary dispatch={dispatch} data={state.data} />;
     default:
       throw new Error('Unknown step');
   }
@@ -119,6 +121,7 @@ const AppContent = () => {
       .then(data => {
         // console.log(data);
         dispatch({type: 'setOptions', value: data});
+        console.log('🐣', data);
       })
       .catch(error => {
         console.error(error.message);
@@ -143,7 +146,7 @@ const AppContent = () => {
        console.error(error.message);
      });
   };
-  console.log(state);
+  console.log((state.options === null) ? '🥚': '🐔', state);
   return (
     <>
       <AppBar

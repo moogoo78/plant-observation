@@ -1,0 +1,13 @@
+<a href={% url "get-event-list" %}>全部</a>
+<pre>
+調查日期: {{ event.date }}
+專案名稱: {{ event.project }}
+調查地點: {{ event.location }}
+主責: {{ event.principal }}
+</pre>
+
+<ul>
+{% for i in event.measurement_or_facts.all %}
+  <li>{{ i.plant.id }}.{{ i.plant.label }}: {% for j in i.parameters.all %}{{ j.category.label }}: {{ j.label }}, {% endfor %}</li>
+{%endfor %}
+</ul>

@@ -134,6 +134,5 @@ STATIC_ROOT = env('STATIC_ROOT', default=default_static_dir)
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-
 CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS')
 CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS')

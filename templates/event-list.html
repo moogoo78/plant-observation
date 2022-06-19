@@ -1,0 +1,5 @@
+<ul>
+  {% for event in event_list %}
+  <li>{{ event.date }} | {{event.project}} | {{event.location}} | {{ event.principal }} - <a href="{% url 'get-event-detail' event.id %}">詳細</a></li>
+  {% endfor %}
+</ul>

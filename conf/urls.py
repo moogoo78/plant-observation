@@ -15,9 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from app.views import EventView, EventIndexView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     #path('', include('app.urls')),
     path('api/v1/', include('app.api_urls')),
+    path('events/', EventIndexView.as_view(), name='get-event-list'),
+    path('events/<int:pk>', EventView.as_view(), name='get-event-detail')
 ]

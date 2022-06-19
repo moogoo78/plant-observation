@@ -73,17 +73,22 @@ def observations(request):
             e.project_id = x['id']
         if principle := data.get('principle'):
             e.principle_id = x['id']
+        if principle := data.get('principle'):
+            e.principle_id = x['id']
 
         e.save()
 
         for i in data['observations']:
-            mof = MeasurementOrFact(plant_id=i['plant']['id'])
+            mof = MeasurementOrFact(
+                event_id=e.id,
+                plant_id=i['plant']['id'])
             mof.save()
             if x := i.get('remarks'):
                 mof.remarks = x
             for j in i['checked']:
-                keys = j.split('__')
-                p = MeasurementOrFactParameter.objects.filter(name=keys[1]).first()
+                keys = j.split('/')
+                #p = MeasurementOrFactParameter.objects.filter(name=keys[1]).first()
+                p = MeasurementOrFactParameter.objects.get(pk=keys[0])
                 mof.parameters.add(p);
 
     return JsonResponse(ret)
