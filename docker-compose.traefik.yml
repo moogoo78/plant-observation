@@ -10,7 +10,7 @@ services:
   django:
     build:
       context: .
-      dockerfile: ./docker-scripts/Dockerfile.prod
+      dockerfile: ./docker/Dockerfile.prod
     expose:
       - 8001
     networks:
