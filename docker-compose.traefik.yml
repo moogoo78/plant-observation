@@ -27,6 +27,7 @@ services:
     volumes:
       - ./docker/nginx-observ.conf:/etc/nginx/conf.d/observ.conf
       - ../observ-volumes/static:/observ-volumes/static
+      - ../observ-volumes/frontend:/observ-volumes/frontend
       #- ../tree-volumes/media:/tree-volumes/media
     #ports:
     #  - 80:80
@@ -36,9 +37,9 @@ services:
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
     labels:
       - traefik.enable=true
-      #- traefik.docker.network=gateway
-      #- traefik.http.routers.observ.entrypoints=web
-      #- traefik.http.routers.observ.rule=Host(`sow.sh21.ml`)
+      - traefik.docker.network=gateway
+      - traefik.http.routers.observ.entrypoints=web
+      - traefik.http.routers.observ.rule=Host(`sow.sh21.ml`)
       #- traefik.http.services.observ.loadbalancer.server.port=80
     networks:
       - gateway
