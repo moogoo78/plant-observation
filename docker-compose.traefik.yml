@@ -27,7 +27,7 @@ services:
     volumes:
       - ./docker/nginx-observ.conf:/etc/nginx/conf.d/observ.conf
       - ../observ-volumes/static:/observ-volumes/static
-      - ../observ-volumes/frontend:/observ-volumes/frontend
+      - ../observ-volumes/plant:/observ-volumes/plant
       #- ../tree-volumes/media:/tree-volumes/media
     #ports:
     #  - 80:80
